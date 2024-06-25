@@ -26,7 +26,7 @@ export class Transponder implements Instrument {
 
   private readonly msfsCircuitVar = `CIRCUIT SWITCH ON:${this.msfsCircuit}`;
 
-  private readonly isAuto = ConsumerSubject.create(this.sub.on('mfd_xpdr_set_auto'), true);
+  private readonly isAuto = ConsumerSubject.create(this.sub.on('mfd_xpdr_set_auto'), false);
   private readonly isAltReportingOn = ConsumerSubject.create(this.sub.on('mfd_xpdr_set_alt_reporting'), true);
 
   private readonly msfsTransponderState = Subject.create(MsfsTransponderState.Off);
