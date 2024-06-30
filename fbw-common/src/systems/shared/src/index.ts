@@ -33,6 +33,7 @@ export * from './navigraph';
 export * from './navigraph';
 export * from './notification';
 export * from './parseMetar';
+export * from './performance';
 export * from './persistence';
 export * from './popup';
 export * from './simbridge';
