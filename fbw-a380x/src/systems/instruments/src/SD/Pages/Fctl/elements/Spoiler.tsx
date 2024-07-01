@@ -24,7 +24,11 @@ export function deflectionToYOffset(deflection: number, maxDeflection: number): 
 
 export const Spoiler: FC<SpoilerProps> = ({ x, y, side, position, onGround }) => {
     const [spoilerDeflection]: [number, (v: number) => void] = useSimVar(`L:A32NX_HYD_SPOILER_${position}_${side}_DEFLECTION`, 'number', 100);
+<<<<<<< HEAD
     const maxDeflection = position >= 3 ? 50 : 30;
+=======
+    const maxDeflection = position >= 3 ? 50 : 35;
+>>>>>>> master
 
     const deflectionYVal = deflectionToYOffset(spoilerDeflection * 50, maxDeflection);
 
