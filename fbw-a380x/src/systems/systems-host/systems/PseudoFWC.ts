@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2023 FlyByWire Simulations
+// Copyright (c) 2021-2024 FlyByWire Simulations
 //
 // SPDX-License-Identifier: GPL-3.0
 
@@ -28,8 +28,9 @@ import {
   NXLogicTriggeredMonostableNode,
 } from '@flybywiresim/fbw-sdk';
 import { VerticalMode } from '@shared/autopilot';
-import { EwdSimvars } from 'instruments/src/EWD/shared/EwdSimvarPublisher';
-import { FuelSystemEvents } from '../MsfsAvionicsCommon/providers/FuelSystemPublisher';
+import { PseudoFwcSimvars } from 'instruments/src/MsfsAvionicsCommon/providers/PseudoFwcPublisher';
+import { FuelSystemEvents } from 'instruments/src/MsfsAvionicsCommon/providers/FuelSystemPublisher';
+
 
 export function xor(a: boolean, b: boolean): boolean {
   return !!((a ? 1 : 0) ^ (b ? 1 : 0));
@@ -71,7 +72,7 @@ enum FwcAuralWarning {
 }
 
 export class PseudoFWC {
-  private readonly sub = this.bus.getSubscriber<EwdSimvars & StallWarningEvents>();
+  private readonly sub = this.bus.getSubscriber<PseudoFwcSimvars & StallWarningEvents>();
   /** Time to inhibit master warnings and cautions during startup in ms */
   private static readonly FWC_STARTUP_TIME = 5000;
 
@@ -996,11 +997,43 @@ export class PseudoFWC {
           console.log('PseudoFWC startup completed.');
         }, PseudoFWC.FWC_STARTUP_TIME);
       } else {
-        this.startupTimer.clear();
         this.startupCompleted.set(false);
         console.log('PseudoFWC shut down.');
       }
     });
+  }
+
+  healthInjector(): void {
+    SimVar.SetSimVarValue('L:A32NX_NO_SMOKING_MEMO', SimVarValueType.Bool, true);
+    SimVar.SetSimVarValue('L:A32NX_CABIN_READY', SimVarValueType.Bool, true);
+
+    const empty = Arinc429Register.empty();
+    empty.setSsm(Arinc429SignStatusMatrix.NormalOperation);
+
+    Arinc429Word.toSimVarValue('L:A32NX_COND_ACSC_1_DISCRETE_WORD_1', empty.value, empty.ssm);
+    Arinc429Word.toSimVarValue('L:A32NX_COND_ACSC_1_DISCRETE_WORD_2', empty.value, empty.ssm);
+    Arinc429Word.toSimVarValue('L:A32NX_COND_ACSC_2_DISCRETE_WORD_1', empty.value, empty.ssm);
+    Arinc429Word.toSimVarValue('L:A32NX_COND_ACSC_2_DISCRETE_WORD_2', empty.value, empty.ssm);
+
+    Arinc429Word.toSimVarValue('L:A32NX_PRESS_CPC_1_DISCRETE_WORD', empty.value, empty.ssm);
+    Arinc429Word.toSimVarValue('L:A32NX_PRESS_CPC_2_DISCRETE_WORD', empty.value, empty.ssm);
+
+    [1, 2].forEach((i) => {
+      const dw = Arinc429Register.empty();
+      dw.setSsm(Arinc429SignStatusMatrix.NormalOperation);
+      dw.setBitValue(11, true);
+      dw.setBitValue(16, true);
+      Arinc429Word.toSimVarValue(`L:A32NX_FCDC_${i}_DISCRETE_WORD_1`, dw.value, dw.ssm);
+      dw.setValue(0);
+      Arinc429Word.toSimVarValue(`L:A32NX_FCDC_${i}_DISCRETE_WORD_2`, dw.value, dw.ssm);
+      [11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 24, 25].forEach((i) => dw.setBitValue(i, true));
+      Arinc429Word.toSimVarValue(`L:A32NX_FCDC_${i}_DISCRETE_WORD_3`, dw.value, dw.ssm);
+      dw.setValue(0);
+      dw.setBitValue(27, SimVar.GetSimVarValue('L:A32NX_SPOILERS_ARMED', SimVarValueType.Bool));
+      Arinc429Word.toSimVarValue(`L:A32NX_FCDC_${i}_DISCRETE_WORD_4`, dw.value, dw.ssm);
+      Arinc429Word.toSimVarValue(`L:A32NX_FCDC_${i}_DISCRETE_WORD_5`, dw.value, dw.ssm);
+    });
+
   }
 
   mapOrder(array, order): [] {
@@ -1082,6 +1115,9 @@ export class PseudoFWC {
    */
   onUpdate() {
     const deltaTime = this.instrument.deltaTime;
+
+    // A380X hack: Inject healthy messages for some systems which are not yet implemented
+    this.healthInjector();
 
     // Inputs update
 
@@ -2577,7 +2613,7 @@ export class PseudoFWC {
       // OVERSPEED FLAPS FULL
       flightPhaseInhib: [2, 3, 4, 8, 9, 10],
       simVarIsActive: MappedSubject.create(
-        ([flapsIndex, computedAirSpeedToNearest2]) => flapsIndex === 5 && computedAirSpeedToNearest2 > 181,
+        ([flapsIndex, computedAirSpeedToNearest2]) => flapsIndex === 5 && computedAirSpeedToNearest2 > 182,
         this.flapsIndex,
         this.computedAirSpeedToNearest2,
       ),
@@ -2593,7 +2629,7 @@ export class PseudoFWC {
       // OVERSPEED FLAPS 3
       flightPhaseInhib: [2, 3, 4, 8, 9, 10],
       simVarIsActive: MappedSubject.create(
-        ([flapsIndex, computedAirSpeedToNearest2]) => flapsIndex === 4 && computedAirSpeedToNearest2 > 189,
+        ([flapsIndex, computedAirSpeedToNearest2]) => flapsIndex === 4 && computedAirSpeedToNearest2 > 196,
         this.flapsIndex,
         this.computedAirSpeedToNearest2,
       ),
@@ -2609,7 +2645,7 @@ export class PseudoFWC {
       // OVERSPEED FLAPS 2
       flightPhaseInhib: [2, 3, 4, 8, 9, 10],
       simVarIsActive: MappedSubject.create(
-        ([flapsIndex, computedAirSpeedToNearest2]) => flapsIndex === 3 && computedAirSpeedToNearest2 > 203,
+        ([flapsIndex, computedAirSpeedToNearest2]) => flapsIndex === 3 && computedAirSpeedToNearest2 > 220,
         this.flapsIndex,
         this.computedAirSpeedToNearest2,
       ),
@@ -2625,7 +2661,7 @@ export class PseudoFWC {
       // OVERSPEED FLAPS 1+F
       flightPhaseInhib: [2, 3, 4, 8, 9, 10],
       simVarIsActive: MappedSubject.create(
-        ([flapsIndex, computedAirSpeedToNearest2]) => flapsIndex === 2 && computedAirSpeedToNearest2 > 219,
+        ([flapsIndex, computedAirSpeedToNearest2]) => flapsIndex === 2 && computedAirSpeedToNearest2 > 222,
         this.flapsIndex,
         this.computedAirSpeedToNearest2,
       ),
@@ -2641,7 +2677,7 @@ export class PseudoFWC {
       // OVERSPEED FLAPS 1
       flightPhaseInhib: [2, 3, 4, 8, 9, 10],
       simVarIsActive: MappedSubject.create(
-        ([flapsIndex, computedAirSpeedToNearest2]) => flapsIndex === 1 && computedAirSpeedToNearest2 > 233,
+        ([flapsIndex, computedAirSpeedToNearest2]) => flapsIndex === 1 && computedAirSpeedToNearest2 > 263,
         this.flapsIndex,
         this.computedAirSpeedToNearest2,
       ),
@@ -3946,7 +3982,7 @@ export class PseudoFWC {
       flightPhaseInhib: [1, 3, 6, 10],
       simVarIsActive: this.toMemo.map((t) => !!t),
       whichCodeToReturn: () => [
-        this.autoBrake.get() === 3 ? 1 : 0,
+        this.autoBrake.get() === 6 ? 1 : 0,
         SimVar.GetSimVarValue('L:A32NX_NO_SMOKING_MEMO', 'bool') === 1 &&
         SimVar.GetSimVarValue('A:CABIN SEATBELTS ALERT SWITCH', 'bool') === 1
           ? 3
