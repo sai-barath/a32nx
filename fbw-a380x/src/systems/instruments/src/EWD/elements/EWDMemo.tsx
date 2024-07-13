@@ -1,5 +1,5 @@
+import { EcamMemos } from '@instruments/common/EWDMessages';
 import FormattedFwcText from '../../Common/EWDMessageParser';
-import EWDMessages from '../../Common/EWDMessages';
 import { useSimVar } from '@instruments/common/simVars';
 import React from 'react';
 
@@ -22,17 +22,28 @@ export const EWDMemo: React.FC<EWDMemoProps> = ({ x, y, active, side }) => {
     const [line7] = useSimVar(`L:A32NX_EWD_LOWER_${side}_LINE_7`, 'number', 500);
     const [line8] = useSimVar(`L:A32NX_EWD_LOWER_${side}_LINE_8`, 'number', 500);
     const message = [
-        EWDMessages[padEWDCode(line1)],
-        EWDMessages[padEWDCode(line2)],
-        EWDMessages[padEWDCode(line3)],
-        EWDMessages[padEWDCode(line4)],
-        EWDMessages[padEWDCode(line5)],
-        EWDMessages[padEWDCode(line6)],
-        EWDMessages[padEWDCode(line7)],
-        EWDMessages[padEWDCode(line8)],
+        EcamMemos[padEWDCode(line1)],
+        EcamMemos[padEWDCode(line2)],
+        EcamMemos[padEWDCode(line3)],
+        EcamMemos[padEWDCode(line4)],
+        EcamMemos[padEWDCode(line5)],
+        EcamMemos[padEWDCode(line6)],
+        EcamMemos[padEWDCode(line7)],
+        EcamMemos[padEWDCode(line8)],
     ].join('\r');
 
-    const numMemos = side === 'LEFT' ? 0 : [line1, line2, line3, line4, line5, line6, line7, line8].filter(Boolean).length;
+    // Also count left side MEMOs for length of line
+    let leftMemoCount = 0;
+    if (side === 'RIGHT') {
+        for (let i = 1; i < 9; i++) {
+            const [lineX] = useSimVar(`L:A32NX_EWD_LOWER_LEFT_LINE_${i}`, 'number', 500);
+            if (lineX) {
+                leftMemoCount++;
+            }
+        }
+    }
+
+    const numMemos = side === 'LEFT' ? 0 : Math.max(leftMemoCount, [line1, line2, line3, line4, line5, line6, line7, line8].filter(Boolean).length);
 
     return (
         <g id={`EWDMemo${side}`} className={active ? 'Show' : 'Hide'}>

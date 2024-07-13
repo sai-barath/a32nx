@@ -1,32 +1,39 @@
-// Copyright (c) 2022 FlyByWire Simulations
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// Copyright (c) 2024 FlyByWire Simulations
 // SPDX-License-Identifier: GPL-3.0
 
-const EWDMessages = {
+// Convention for IDs:
+// First two digits: ATA chapter
+// Third digit: Sub chapter, if needed
+// Fourth digit: 0 for MEMO, 1 for checklists, 2 for infos, 3 for INOP sys, 8 for ABN sensed, 9 for ABN non-sensed
+
+/** All MEMOs should be here, EWD and PFD. */
+export const EcamMemos: { [n: string]: string } = {
   '000000001': '              \x1b<3mNORMAL',
-  '000001001': '\x1b<3m\x1b4mT.O\x1bm AUTO BRK\x1b<5m.....MAX',
-  '000001002': '\x1b<3m\x1b4mT.O\x1bm AUTO BRK MAX',
-  '000001003': '    \x1b<3mSEAT BELTS\x1b<5m....ON',
-  '000001004': '    \x1b<3mSEAT BELTS ON',
-  '000001005': '    \x1b<3mCABIN\x1b<5m......CHECK',
-  '000001006': '    \x1b<3mCABIN READY',
-  '000001007': '    \x1b<3mSPLRS\x1b<5m........ARM',
-  '000001008': '    \x1b<3mSPLRS ARM',
-  '000001009': '    \x1b<3mFLAPS\x1b<5m........T.O',
-  '000001010': '    \x1b<3mFLAPS T.O',
-  '000001011': '    \x1b<3mT.O CONFIG\x1b<5m..TEST',
-  '000001012': '    \x1b<3mT.O CONFIG NORMAL',
-  '000002001': '\x1b<3m\x1b4mLDG\x1bm LDG GEAR\x1b<5m......DN',
-  '000002002': '\x1b<3m\x1b4mLDG\x1bm LDG GEAR DN',
-  '000002003': '    \x1b<3mSEAT BELTS\x1b<5m....ON',
-  '000002004': '    \x1b<3mSEAT BELTS ON',
-  '000002005': '    \x1b<3mCABIN\x1b<5m......CHECK',
-  '000002006': '    \x1b<3mCABIN READY',
-  '000002007': '    \x1b<3mSPLRS\x1b<5m........ARM',
-  '000002008': '    \x1b<3mSPLRS ARM',
-  '000002009': '    \x1b<3mFLAPS\x1b<5m.......FULL',
-  '000002010': '    \x1b<3mFLAPS FULL',
-  '000002011': '    \x1b<3mFLAPS\x1b<5m.....CONF 3',
-  '000002012': '    \x1b<3mFLAPS CONF 3',
+  '000001001': ' \x1b<7m\x1b4mT.O\x1bm',
+  '000001002': '   \x1b<5m-SIGNS .........ON',
+  '000001003': '   \x1b<3m-SIGNS ON',
+  '000001004': '   \x1b<5m-CABIN ......CHECK',
+  '000001005': '   \x1b<3m-CABIN READY',
+  '000001006': '   \x1b<5m-SPLRs ........ARM',
+  '000001007': '   \x1b<3m-SPLRs ARM',
+  '000001008': '   \x1b<5m-FLAPS ........T.O',
+  '000001009': '   \x1b<3m-FLAPS : T.O',
+  '000001010': '   \x1b<5m-AUTO BRAKE ...RTO',
+  '000001011': '   \x1b<3m-AUTO BRAKE RTO',
+  '000001012': '   \x1b<5m-T.O CONFIG ..TEST',
+  '000001013': '   \x1b<3m-T.O CONFIG NORMAL',
+  '000002001': ' \x1b<7m\x1b4mLDG\x1bm',
+  '000002002': '   \x1b<5m-SIGNS .........ON',
+  '000002003': '   \x1b<3m-SIGNS ON',
+  '000002004': '   \x1b<5m-CABIN ......CHECK',
+  '000002005': '   \x1b<3m-CABIN READY',
+  '000002006': '   \x1b<5m-LDG GEAR ....DOWN',
+  '000002007': '   \x1b<3m-LDG GEAR DOWN',
+  '000002008': '   \x1b<5m-FLAPS ........LDG',
+  '000002009': '   \x1b<3m-FLAPS : LDG',
+  '000002010': '   \x1b<5m-SPLRs ........ARM',
+  '000002011': '   \x1b<3m-SPLRs ARM',
   '000002201': '\x1b<3mAUTO BRK LO',
   '000002202': '\x1b<3mAUTO BRK MED',
   '000002203': '\x1b<3mAUTO BRK MAX',
@@ -58,7 +65,7 @@ const EWDMessages = {
   '000004001': '\x1b<3mNW STRG DISC',
   '000004002': '\x1b<4mNW STRG DISC',
   '000005001': '\x1b<3mREFUELG',
-  '000005501': '\x1b<3mGND SPLRS ARMED',
+  '000005501': '\x1b<3mGND SPLRs ARMED',
   '000056101': '\x1b<3mCOMPANY ALERT',
   '000056102': '\x1b<3m\x1b)mCOMPANY ALERT',
   '000006001': '\x1b<3mSPEED BRK',
@@ -67,7 +74,7 @@ const EWDMessages = {
   '000008001': '\x1b<3mSEAT BELTS',
   '000008501': '\x1b<3mNO MOBILE',
   '000009001': '\x1b<3mNO SMOKING',
-  '000009501': '\x1b<3mNO PORTABLE DEVICES',
+  '000009501': '\x1b<3mNO MOBILE',
   '000010001': '\x1b<3mSTROBE LT OFF',
   '000010501': '\x1b<3mOUTR TK FUEL XFRD',
   '000011001': '\x1b<3mFOB BELOW 3 T',
@@ -77,7 +84,6 @@ const EWDMessages = {
   '000015001': '\x1b<6mLDG INHIBIT',
   '000030501': '\x1b<3mGPWS FLAP MODE OFF',
   '000066001': '\x1b<3mGSM DISC < 4MN',
-  '000056501': '\x1b<3mATC DATALINK STBY',
   '000016001': '\x1b<3mHYD PTU',
   '000017001': '\x1b<3mAPU AVAIL',
   '000018001': '\x1b<3mAPU BLEED',
@@ -105,7 +111,6 @@ const EWDMessages = {
   '000055201': '\x1b<3mCOMPANY MSG',
   '000056001': '\x1b<3mHI ALT SET',
   '000068001': '\x1b<3mADIRS SWTG',
-  '000056701': '\x1b<3mVHF3 VOICE',
   '213122101': '\x1b<2m\x1b4mCAB PR\x1bm EXCESS CAB ALT',
   '213122102': '\x1b<5m -CREW OXY MASKS.....USE',
   '213122103': '\x1b<5m -SIGNS...............ON',
@@ -192,10 +197,24 @@ const EWDMessages = {
   '216330503': '\x1b<4m -FWD CAB TRIM VALVE',
   '216330504': '\x1b<4m -AFT CAB TRIM VALVE',
   '216330505': '\x1b<4m -TRIM AIR HI PR',
-  '221070001': '\x1b<4m\x1b4mT.O\x1bm SPEEDS TOO LOW',
-  '221070002': '\x1b<5m -TOW AND T.O DATA.CHECK',
-  '221071001': '\x1b<4m\x1b4mT.O\x1bm V1/VR/V2 DISAGREE',
-  '221072001': '\x1b<4m\x1b4mT.O\x1bm SPEEDS NOT INSERTED',
+  '220000001': '\x1b<2mAP OFF',
+  '220000002': '\x1b<4mA/THR OFF',
+  '221000001': '\x1b<3mFMS SWTG',
+  '230000001': '\x1b<3mCAPT ON RMP 3',
+  '230000002': '\x1b<3mF/O ON RMP 3',
+  '230000003': '\x1b<3mCAPT+F/O ON RMP 3',
+  '230000004': '\x1b<3mCABIN READY',
+  '230000005': '\x1b<3mCPNY DTLNK NOT AVAIL',
+  '230000006': '\x1b<3mGND HF DATALINK OVRD',
+  '230000007': '\x1b<3mHF VOICE',
+  '230000008': '\x1b<3mPA IN USE',
+  '230000009': '\x1b<3mRMP 1+2+3 OFF',
+  '230000010': '\x1b<3mRMP 1+3 OFF',
+  '230000011': '\x1b<3mRMP 2+3 OFF',
+  '230000012': '\x1b<3mRMP 3 OFF',
+  '230000013': '\x1b<3mSATCOM ALERT',
+  '230000014': '\x1b<3mVHF DTLNK MAN SCAN',
+  '230000015': '\x1b<3mVHF VOICE',
   '260001001': '\x1b<2m\x1b4mENG 1 FIRE\x1bm',
   '260001002': '\x1b<5m -THR LEVER 1.......IDLE',
   '260001003': '\x1b<5m -THR LEVERS........IDLE',
@@ -417,4 +436,697 @@ const EWDMessages = {
   '770064703': '\x1b<5m -THR LEVERS.....TO/GA',
 };
 
-export default EWDMessages;
+interface AbstractChecklistItem {
+  /** The name of the item, displayed at the beginning of the line. Does not accept special formatting tokens. No leading dot. */
+  name: string;
+  /** sensed or not sensed item. Sensed items are automatically checked. */
+  sensed: boolean;
+  /** On which level of indentation to print the item. 0 equals the first level. Optional, not set means first level. */
+  level?: number;
+  /** Manually define color. standard (cyan when not completed, white/green when completed), or always cyan/green/amber. Standard, if not set. */
+  color?: 'standard' | 'cyan' | 'green' | 'amber';
+}
+interface ChecklistAction {
+  /** Label at the end of the line if action is not completed. */
+  labelNotCompleted: string;
+  /** Label after "name" if action is completed. Optional, only fill if different from "labelNotCompleted". */
+  labelCompleted?: string;
+}
+
+interface ChecklistCondition {}
+
+interface AbnormalProcedure {
+  /** Title of the fault, e.g. "_HYD_ G SYS PRESS LO". \n produces second line. Accepts special formatting tokens  */
+  title: string;
+  /** sensed or not sensed abnormal procedure */
+  sensed: boolean;
+  /** An array of possible checklist items. Key represents the message ID, which should be unique. */
+  items: ((ChecklistAction | ChecklistCondition) & AbstractChecklistItem)[];
+  /** LAND ASAP or LAND ANSA displayed below title? Optional, don't fill if no recommendation */
+  recommendation?: 'LAND ASAP' | 'LAND ANSA';
+}
+
+/** All normal procedures (checklists, via ECL) should be here. */
+export const EcamNormalProcedures: { [n: number]: void } = {};
+
+/** All abnormal sensed procedures (alerts, via ECL) should be here. */
+export const EcamAbnormalSensedProcedures: { [n: number]: AbnormalProcedure } = {
+  // ATA 21: FG / FMS
+  220800001: {
+    title: '\x1b<2m\x1b4mAUTO FLT\x1bm AP OFF',
+    sensed: true,
+    items: [], // TODO
+  },
+  220800002: {
+    title: '\x1b<2mAUTOLAND',
+    sensed: true,
+    items: [], // TODO
+  },
+  220800003: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm A/THR LIMITED',
+    sensed: true,
+    items: [
+      {
+        name: 'ALL THR LEVERS', // When all ENG operative
+        sensed: true,
+        labelNotCompleted: 'CLB',
+      },
+      {
+        name: 'THR LEVERS', // In case of ENG out
+        sensed: true,
+        labelNotCompleted: 'MCT',
+      },
+    ],
+  },
+  220800004: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm A/THR OFF',
+    sensed: true,
+    items: [
+      {
+        name: 'ALL THR LEVERS',
+        sensed: true,
+        labelNotCompleted: 'MOVE',
+      },
+    ],
+  },
+  220800005: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm AFS CTL PNL FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'USE MFD FCU BKUP', // If FCU BKUP is avail on CAPT + F/O side
+        sensed: false,
+      },
+      {
+        name: 'Use CAPT MFD FCU BKUP', // If FCU BKUP is avail on CAPT / F/O side only
+        sensed: false,
+      },
+      {
+        name: 'Use F/O MFD FCU BKUP', // If FCU BKUP is avail on CAPT / F/O side only
+        sensed: false,
+      },
+    ],
+  },
+  220800006: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm APPROACH CAPABILITY DOWNGRADED',
+    sensed: true,
+    items: [],
+  },
+  220800007: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm AFS CTL PNL+CAPT BKUP CTL FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'Use F/O MFD FCU BKUP', // If FCU BKUP is avail on CAPT / F/O side only
+        sensed: false,
+      },
+    ],
+  },
+  220800008: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm AFS CTL PNL+F/O BKUP CTL FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'Use CAPT MFD FCU BKUP', // If FCU BKUP is avail on CAPT / F/O side only
+        sensed: false,
+      },
+    ],
+  },
+  220800009: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm ENG 1 A/THR OFF',
+    sensed: true,
+    items: [
+      {
+        name: 'THR LEVER 1', // If in flight
+        sensed: false,
+        labelNotCompleted: 'MAN ADJUST',
+      },
+    ],
+  },
+  220800010: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm ENG 2 A/THR OFF',
+    sensed: true,
+    items: [
+      {
+        name: 'THR LEVER 2', // If in flight
+        sensed: false,
+        labelNotCompleted: 'MAN ADJUST',
+      },
+    ],
+  },
+  220800011: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm ENG 3 A/THR OFF',
+    sensed: true,
+    items: [
+      {
+        name: 'THR LEVER 3', // If in flight
+        sensed: false,
+        labelNotCompleted: 'MAN ADJUST',
+      },
+    ],
+  },
+  220800012: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm ENG 4 A/THR OFF',
+    sensed: true,
+    items: [
+      {
+        name: 'THR LEVER 4', // If in flight
+        sensed: false,
+        labelNotCompleted: 'MAN ADJUST',
+      },
+    ],
+  },
+  220800013: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm ROLL OUT FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'FOR AUTOLAND: MAN ROLL OUT ONLY', // Always completed
+        sensed: true,
+        color: 'green',
+      },
+    ],
+  },
+  220800014: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm TCAS MODE FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'FOR TCAS ALERT', // Always completed
+        sensed: true,
+        color: 'green',
+      },
+      {
+        name: 'AP & FD', // Always completed
+        sensed: true,
+        labelNotCompleted: 'OFF',
+        color: 'green',
+      },
+      {
+        name: 'FLY MANUALLY TCAS RA ORDER', // Always completed
+        sensed: true,
+        color: 'green',
+      },
+    ],
+  },
+  220800015: {
+    title: '\x1b<4m\x1b4mCDS & AUTO FLT\x1bm FCU SWITCHED OFF',
+    sensed: true,
+    items: [],
+  },
+  221800001: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm FMC-A FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'FMS SWTG',
+        sensed: true,
+        labelNotCompleted: 'NORM',
+      },
+    ],
+  },
+  221800002: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm FMC-B FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'FMS SWTG',
+        sensed: true,
+        labelNotCompleted: 'NORM',
+      },
+    ],
+  },
+  221800003: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm FMC-C FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'FMS SWTG',
+        sensed: true,
+        labelNotCompleted: 'NORM',
+      },
+    ],
+  },
+  221800004: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm FMS 1 FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'FMC A+C FAULT',
+        sensed: true,
+        color: 'amber',
+      },
+      {
+        name: 'FMC A+B FAULT',
+        sensed: true,
+        color: 'amber',
+      },
+      {
+        name: 'FMC A FAULT',
+        sensed: true,
+        color: 'amber',
+      },
+      {
+        name: 'FMS SWTG',
+        sensed: true,
+        labelNotCompleted: 'BOTH ON 2',
+      },
+    ],
+  },
+  221800005: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm FMS 2 FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'FMC A+B FAULT',
+        sensed: true,
+        color: 'amber',
+      },
+      {
+        name: 'FMC B+C FAULT',
+        sensed: true,
+        color: 'amber',
+      },
+      {
+        name: 'FMC B FAULT',
+        sensed: true,
+        color: 'amber',
+      },
+      {
+        name: 'FMS SWTG',
+        sensed: true,
+        labelNotCompleted: 'BOTH ON 1',
+      },
+    ],
+  },
+  221800006: {
+    title: '\x1b<4m\x1b4mAUTO FLT\x1bm FMS 1+2 FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'ALL FMCs FAULT',
+        sensed: true,
+        color: 'amber',
+      },
+      {
+        name: 'FMS SWTG',
+        sensed: true,
+        labelNotCompleted: 'NORM',
+      },
+      {
+        name: 'FOR NAV: USE STBY INSTRUMENTS',
+        sensed: false,
+      },
+      {
+        name: 'FOR NAVAID TUNING: USE RMP',
+        sensed: false,
+      },
+      {
+        name: '[MFD SURV] TAWS FLAP MODE',
+        sensed: false,
+        labelNotCompleted: 'OFF',
+      },
+    ],
+  },
+  221800007: {
+    title: '\x1b<4m\x1b4mT.O\x1bm SPEEDS NOT INSERTED',
+    sensed: true,
+    items: [],
+  },
+  230800001: {
+    title: '\x1b<4m\x1b4mCAB COM\x1bm CIDS 1+2+3 FAULT',
+    sensed: true,
+    items: [],
+  },
+  230800002: {
+    title: '\x1b<4m\x1b4mCAB COM\x1bm CIDS CABIN COM FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'UPPER DECK PA FAULT',
+        sensed: true,
+        color: 'amber',
+      },
+      {
+        name: 'MAIN DECK PA FAULT',
+        sensed: true,
+        color: 'amber',
+      },
+      {
+        name: 'LOWER DECK PA FAULT',
+        sensed: true,
+        color: 'amber',
+      },
+      {
+        name: 'CABIN INTERPHONE FAULT',
+        sensed: true,
+        color: 'amber',
+      },
+    ],
+  },
+  230800003: {
+    title: '\x1b<4m\x1b4mCAB COM\x1bm COM DEGRADED',
+    sensed: true,
+    items: [
+      {
+        name: 'PA DEGRADED',
+        sensed: true,
+        color: 'amber',
+      },
+      {
+        name: 'CABIN INTERPHONE DEGRADED',
+        sensed: true,
+        color: 'amber',
+      },
+    ],
+  },
+  230800004: {
+    title: '\x1b<4m\x1b4mCOM\x1bm CAPT PTT STUCK',
+    sensed: true,
+    items: [],
+  },
+  230800005: {
+    title: '\x1b<4m\x1b4mCOM\x1bm F/O PTT STUCK',
+    sensed: true,
+    items: [],
+  },
+  230800006: {
+    title: '\x1b<4m\x1b4mCOM\x1bm THIRD OCCUPANT PTT STUCK',
+    sensed: true,
+    items: [],
+  },
+  230800007: {
+    title: '\x1b<4m\x1b4mCOM\x1bm DATALINK FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'ATC COM VOICE ONLY',
+        sensed: false,
+        color: 'cyan',
+      },
+      {
+        name: 'CPNY COM VOICE ONLY',
+        sensed: true,
+        color: 'cyan',
+      },
+    ],
+  },
+  230800008: {
+    title: '\x1b<4m\x1b4mCOM\x1bm HF 1 DATALINK FAULT',
+    sensed: true,
+    items: [],
+  },
+  230800009: {
+    title: '\x1b<4m\x1b4mCOM\x1bm HF 2 DATALINK FAULT',
+    sensed: true,
+    items: [],
+  },
+  230800010: {
+    title: '\x1b<4m\x1b4mCOM\x1bm HF 1 EMITTING',
+    sensed: true,
+    items: [],
+  },
+  230800011: {
+    title: '\x1b<4m\x1b4mCOM\x1bm HF 2 EMITTING',
+    sensed: true,
+    items: [],
+  },
+  230800012: {
+    title: '\x1b<4m\x1b4mCOM\x1bm RMP 1 FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'RMP 1',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+    ],
+  },
+  230800013: {
+    title: '\x1b<4m\x1b4mCOM\x1bm RMP 2 FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'RMP 2',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+    ],
+  },
+  230800014: {
+    title: '\x1b<4m\x1b4mCOM\x1bm RMP 3 FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'RMP 3',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+    ],
+  },
+  230800015: {
+    title: '\x1b<4m\x1b4mCOM\x1bm RMP 1+2 FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'RMP 1',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+      {
+        name: 'RMP 2',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+    ],
+  },
+  230800016: {
+    title: '\x1b<4m\x1b4mCOM\x1bm RMP 1+3 FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'RMP 1',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+      {
+        name: 'RMP 3',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+    ],
+  },
+  230800017: {
+    title: '\x1b<4m\x1b4mCOM\x1bm RMP 2+3 FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'RMP 2',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+      {
+        name: 'RMP 3',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+    ],
+  },
+  230800018: {
+    title: '\x1b<4m\x1b4mCOM\x1bm RMP 1+2+3 FAULT',
+    sensed: true,
+    items: [
+      {
+        name: 'RMP 1',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+      {
+        name: 'RMP 2',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+      {
+        name: 'RMP 3',
+        sensed: true,
+        labelNotCompleted: 'OFF',
+      },
+      {
+        name: 'NO VOICE COM AVAIL', // If SATCOM datalink avail
+        sensed: true,
+        color: 'cyan',
+      },
+      {
+        name: 'SATCOM DATALINK AVAIL', // If SATCOM datalink avail
+        sensed: true,
+        color: 'cyan',
+      },
+      {
+        name: 'NO COM AVAIL', // If SATCOM datalink not avail
+        sensed: true,
+        color: 'cyan',
+      },
+    ],
+  },
+  230800019: {
+    title: '\x1b<4m\x1b4mCOM\x1bm SATCOM DATALINK FAULT',
+    sensed: true,
+    items: [],
+  },
+  230800020: {
+    title: '\x1b<4m\x1b4mCOM\x1bm SATCOM FAULT',
+    sensed: true,
+    items: [],
+  },
+  230800021: {
+    title: '\x1b<4m\x1b4mCOM\x1bm SATCOM VOICE FAULT',
+    sensed: true,
+    items: [],
+  },
+  230800022: {
+    title: '\x1b<4m\x1b4mCOM\x1bm VHF 1 EMITTING',
+    sensed: true,
+    items: [
+      {
+        name: 'RMP TX KEY', // After 60s of VHF emitting
+        sensed: true,
+        labelNotCompleted: 'DESELECT',
+      },
+    ],
+  },
+  230800023: {
+    title: '\x1b<4m\x1b4mCOM\x1bm VHF 2 EMITTING',
+    sensed: true,
+    items: [
+      {
+        name: 'RMP TX KEY', // After 60s of VHF emitting
+        sensed: true,
+        labelNotCompleted: 'DESELECT',
+      },
+    ],
+  },
+  230800024: {
+    title: '\x1b<4m\x1b4mCOM\x1bm VHF 3 EMITTING',
+    sensed: true,
+    items: [
+      {
+        name: 'RMP TX KEY', // After 60s of VHF emitting
+        sensed: true,
+        labelNotCompleted: 'DESELECT',
+      },
+    ],
+  },
+  230800025: {
+    title: '\x1b<4m\x1b4mCOM\x1bm VHF 3 DATALINK FAULT',
+    sensed: true,
+    items: [],
+  },
+  280013001: {
+    title: '\x1b<4m\x1b4mFUEL\x1bm FEED TKs 1+2 LEVEL LO',
+    sensed: true,
+    items: [
+      {
+        name: 'IF NO FUEL LEAK:',
+        sensed: false,
+      },
+      {
+        name: 'ALL CROSSFEEDs',
+        sensed: true,
+        labelNotCompleted: 'ON',
+        level: 1,
+      },
+      {
+        name: 'TRIM TK FEED', // If gravity transfer from trim tank in progress
+        sensed: true,
+        labelNotCompleted: 'AUTO',
+        level: 3,
+      },
+      {
+        name: 'OUTR TK XFR', // For transfer tanks containing fuel
+        sensed: true,
+        labelNotCompleted: 'MAN',
+        level: 3,
+      },
+      {
+        name: 'TRIM TK XFR', // If at least one trim tank pump is running
+        sensed: true,
+        labelNotCompleted: 'FWD',
+        level: 4,
+      },
+      {
+        name: 'INR TK XFR',
+        sensed: true,
+        labelNotCompleted: 'MAN',
+        level: 3,
+      },
+      {
+        name: 'MID TK XFR',
+        sensed: true,
+        labelNotCompleted: 'MAN',
+        level: 3,
+      },
+    ],
+  },
+};
+
+/** All abnormal non-sensed procedures (via ECL) should be here. Don't start for now, format needs to be defined. */
+export const EcamAbnormalNonSensedProcedures: { [n: number]: AbnormalProcedure } = {};
+
+/** All possible INFOs (e.g. CAT 3 SINLE ONLY), with special formatting characters. */
+export const Infos: { [n: number]: string } = {};
+
+/** All possible INOP sys, with special formatting characters. */
+export const InopSys: { [n: number]: string } = {
+  220300001: '\x1b<4mA/THR',
+  220300002: '\x1b<4mCAT 3',
+  220300003: '\x1b<3mCAT 2 ONLY',
+  220300004: '\x1b<4mAFS CTL PNL',
+  220300005: '\x1b<4mAP 1',
+  220300006: '\x1b<4mAP 2',
+  220300007: '\x1b<4mAP 1+2',
+  220300008: '\x1b<4mCAT 3 DUAL',
+  220300009: '\x1b<4mCAT 2',
+  220300010: '\x1b<4mGLS AUTOLAND',
+  220300011: '\x1b<3mCAT 3 SINGLE ONLY',
+  220300012: '\x1b<4mCAPT AFS BKUP CTL',
+  220300013: '\x1b<4mF/O AFS BKUP CTL',
+  220300014: '\x1b<4mENG 1 A/THR',
+  220300015: '\x1b<4mENG 2 A/THR',
+  220300016: '\x1b<4mENG 3 A/THR',
+  220300017: '\x1b<4mENG 4 A/THR',
+  220300018: '\x1b<4mROLL OUT',
+  220300019: '\x1b<3mFOR AUTOLAND: MAN ROLL OUT ONLY',
+  220300020: '\x1b<4mAP/FD TCAS MODE',
+  221300001: '\x1b<4mFMC-A',
+  221300002: '\x1b<4mFMC-B',
+  221300003: '\x1b<4mFMC-C',
+  221300004: '\x1b<3mFMS 1 ON FMC-C',
+  221300005: '\x1b<3mFMS 2 ON FMC-C',
+  221300006: '\x1b<4mFMS 1',
+  221300007: '\x1b<4mFMS 2',
+  221300008: '\x1b<3mSTBY INSTRUMENTS NAV AVAIL',
+  230300001: '\x1b<4mCIDS 1+2+3',
+  230300002: '\x1b<4mUPPER DECK PA',
+  230300003: '\x1b<4mMAIN DECK PA',
+  230300004: '\x1b<4mLOWER DECK PA',
+  230300005: '\x1b<4mCABIN INTERPHONE',
+  230300006: '\x1b<4mDATALINK',
+  230300007: '\x1b<4mHF 1 DATALINK',
+  230300008: '\x1b<4mHF 2 DATALINK',
+  230300009: '\x1b<4mRMP 1',
+  230300010: '\x1b<4mRMP 2',
+  230300011: '\x1b<4mRMP 3',
+  230300012: '\x1b<4mRMP 1+2',
+  230300013: '\x1b<4mRMP 1+3',
+  230300014: '\x1b<4mRMP 2+3',
+  230300015: '\x1b<4mSTBY RAD NAV',
+  230300016: '\x1b<4mRMP 1+2+3',
+  230300017: '\x1b<4mVHF 1+2+3',
+  230300018: '\x1b<4mHF 1+2',
+  230300019: '\x1b<4mSATCOM',
+  230300020: '\x1b<4mSATCOM DATALINK',
+  230300021: '\x1b<4mVHF 3 DATALINK',
+  340300001: '\x1b<4mGPWS 1',
+  340300002: '\x1b<4mGPWS 2',
+  340300003: '\x1b<4mGPWS 1+2',
+};
