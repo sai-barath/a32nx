@@ -3,9 +3,11 @@ import { FmcService } from 'instruments/src/MFD/FMC/FmcService';
 import { FmcServiceInterface } from 'instruments/src/MFD/FMC/FmcServiceInterface';
 import { MfdComponent } from './MFD';
 import { MfdSimvarPublisher } from './shared/MFDSimvarPublisher';
+import { FailuresConsumer } from '@flybywiresim/fbw-sdk';
+import { A380Failure } from '@failures';
 
 class A380X_MFD extends BaseInstrument {
-  private readonly bus: EventBus;
+  private readonly bus = new EventBus();
 
   private readonly simVarPublisher: MfdSimvarPublisher;
 
@@ -19,6 +21,8 @@ class A380X_MFD extends BaseInstrument {
 
   private readonly fmcService: FmcServiceInterface;
 
+  private readonly failuresConsumer = new FailuresConsumer('A32NX');
+
   /**
    * "mainmenu" = 0
    * "loading" = 1
@@ -29,11 +33,10 @@ class A380X_MFD extends BaseInstrument {
 
   constructor() {
     super();
-    this.bus = new EventBus();
     this.simVarPublisher = new MfdSimvarPublisher(this.bus);
     this.hEventPublisher = new HEventPublisher(this.bus);
     this.clock = new Clock(this.bus);
-    this.fmcService = new FmcService(this.bus, this.mfdCaptRef.getOrDefault());
+    this.fmcService = new FmcService(this.bus, this.mfdCaptRef.getOrDefault(), this.failuresConsumer);
   }
 
   get templateID(): string {
@@ -94,6 +97,10 @@ class A380X_MFD extends BaseInstrument {
 
     // Remove "instrument didn't load" text
     mfd?.querySelector(':scope > h1')?.remove();
+
+    this.failuresConsumer.register(A380Failure.FmcA);
+    this.failuresConsumer.register(A380Failure.FmcB);
+    this.failuresConsumer.register(A380Failure.FmcC);
   }
 
   public onInteractionEvent(args: string[]): void {
@@ -105,6 +112,8 @@ class A380X_MFD extends BaseInstrument {
    */
   public Update(): void {
     super.Update();
+
+    this.failuresConsumer.update();
 
     if (this.gameState !== 3) {
       const gamestate = this.getGameState();

@@ -28,8 +28,6 @@ module.exports = {
         typecheckingPlugin(),
     ],
     instruments: [
-        msfsAvionicsInstrument('PFD'),
-        msfsAvionicsInstrument('ND'),
         msfsAvionicsInstrument('MFD'),
         msfsAvionicsInstrument('Clock'),
         msfsAvionicsInstrument('ND'),
